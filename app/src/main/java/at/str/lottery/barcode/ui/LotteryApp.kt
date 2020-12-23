@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import at.str.lottery.barcode.R
+import at.str.lottery.barcode.model.ScanTrackerViewModel
 import at.str.lottery.barcode.ui.scan.ScanScreen
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
@@ -38,7 +39,7 @@ fun SettingsScreen(navController: NavController) {
 }
 
 @Composable
-fun LotteryApp() {
+fun LotteryApp(scanTrackerViewModel: ScanTrackerViewModel) {
     LotteryBarcodeScannerTheme {
         // A surface container using the 'background' color from the theme
         val navController = rememberNavController()
@@ -75,7 +76,7 @@ fun LotteryApp() {
                 }
             ) {
                 NavHost(navController, startDestination = Screen.Scan.route) {
-                    composable(Screen.Scan.route) { ScanScreen(navController) }
+                    composable(Screen.Scan.route) { ScanScreen(navController, scanTrackerViewModel) }
                     composable(Screen.Settings.route) { SettingsScreen(navController) }
                 }
             }

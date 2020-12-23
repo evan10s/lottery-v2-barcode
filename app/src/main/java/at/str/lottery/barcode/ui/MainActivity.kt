@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            LotteryApp()
+            LotteryApp(viewModel)
         }
     }
 
