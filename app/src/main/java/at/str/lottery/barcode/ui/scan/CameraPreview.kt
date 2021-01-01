@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.platform.AmbientLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.compose.ui.viewinterop.viewModel
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import at.str.lottery.barcode.databinding.CameraHostBinding
@@ -22,7 +23,7 @@ import java.util.concurrent.Executors
 
 
 @Composable
-fun CameraPreview(onScan: (List<Barcode>, ScanTrackerViewModel) -> Unit, scanTrackerViewModel: ScanTrackerViewModel) {
+fun CameraPreview(onScan: (List<Barcode>, ScanTrackerViewModel) -> Unit, scanTrackerViewModel: ScanTrackerViewModel = viewModel()) {
     fun onScanWrapper(barcodes: List<Barcode>) {
         onScan(barcodes, scanTrackerViewModel)
     }

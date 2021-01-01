@@ -16,14 +16,10 @@ const val TAG = "LotteryBarcode"
 
 class MainActivity : ComponentActivity() {
     private lateinit var cameraHostBinding: CameraHostBinding
-    private lateinit var viewModel: ScanTrackerViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cameraHostBinding = CameraHostBinding.inflate(layoutInflater)
-
-        Log.i(TAG, "Called ViewModelProvider.get")
-        viewModel = ViewModelProvider(this).get(ScanTrackerViewModel::class.java)
 
         if (allPermissionsGranted()) {
             startCamera()
@@ -33,7 +29,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            LotteryApp(viewModel)
+            LotteryApp()
         }
     }
 

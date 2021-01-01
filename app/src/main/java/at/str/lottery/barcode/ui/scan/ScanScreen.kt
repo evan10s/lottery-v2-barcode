@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.viewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import at.str.lottery.barcode.model.ScanTrackerViewModel
@@ -19,8 +20,8 @@ fun handleScan(barcodes: List<Barcode>, scanTrackerViewModel: ScanTrackerViewMod
 }
 
 @Composable
-fun ScanScreen(navController: NavController, scanTrackerViewModel: ScanTrackerViewModel) {
+fun ScanScreen(navController: NavController) {
     Column(Modifier.fillMaxHeight()) {
-        CameraPreview(::handleScan, scanTrackerViewModel)
+        CameraPreview(::handleScan)
     }
 }
