@@ -5,7 +5,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import at.str.lottery.barcode.ui.theme.blue500
+import at.str.lottery.barcode.ui.theme.blueLight
+import at.str.lottery.barcode.ui.theme.purple300
 
 private val DarkColorPalette = darkColors(
     primary = blue500,

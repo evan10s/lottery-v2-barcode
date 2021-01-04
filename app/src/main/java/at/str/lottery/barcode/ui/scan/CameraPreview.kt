@@ -5,7 +5,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.AmbientContext
@@ -13,7 +12,6 @@ import androidx.compose.ui.platform.AmbientLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.compose.ui.viewinterop.viewModel
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
 import at.str.lottery.barcode.databinding.CameraHostBinding
 import at.str.lottery.barcode.model.ScanTrackerViewModel
 import at.str.lottery.barcode.ui.TAG
@@ -21,13 +19,8 @@ import com.google.mlkit.vision.barcode.Barcode
 import java.util.concurrent.Executors
 
 
-
 @Composable
-fun CameraPreview(onScan: (List<Barcode>, ScanTrackerViewModel) -> Unit, scanTrackerViewModel: ScanTrackerViewModel = viewModel()) {
-    fun onScanWrapper(barcodes: List<Barcode>) {
-        onScan(barcodes, scanTrackerViewModel)
-    }
-
+fun CameraPreview(onBarcodeScanned: (List<Barcode>) -> Unit) {
     val lifecycleOwner = AmbientLifecycleOwner.current
     val context = AmbientContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
@@ -49,7 +42,9 @@ fun CameraPreview(onScan: (List<Barcode>, ScanTrackerViewModel) -> Unit, scanTra
             val imageQrAnalyzer = ImageAnalysis.Builder()
                 .build()
                 .also {
-                    it.setAnalyzer(cameraExecutor, QrAnalyzer(::onScanWrapper))
+                    it.setAnalyzer(cameraExecutor, QrAnalyzer { barcodes ->
+                        onBarcodeScanned(barcodes)
+                    })
                 }
 
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
