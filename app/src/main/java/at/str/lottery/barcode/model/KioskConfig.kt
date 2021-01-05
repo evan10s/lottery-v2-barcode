@@ -6,7 +6,7 @@ import at.str.lottery.barcode.util.UriAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
-class KioskConfig(
+data class KioskConfig(
     var kioskId: String = "",
     var serverUrl: Uri? = null
 ) {

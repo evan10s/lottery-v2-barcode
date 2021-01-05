@@ -1,5 +1,6 @@
 package at.str.lottery.barcode.model
 
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -19,6 +20,7 @@ class ScanTrackerViewModel : ViewModel() {
     private val sendError = MutableStateFlow("")
     private val kioskConfig: MutableStateFlow<KioskConfig?> = MutableStateFlow(null)
     private val scannerMode = MutableStateFlow(ScannerMode.SETUP)
+    private val numScans = MutableStateFlow(0)
 
     val state: StateFlow<BarcodeScreenState>
         get() = _state
@@ -27,19 +29,21 @@ class ScanTrackerViewModel : ViewModel() {
         Log.i(TAG, "VIEW MODEL INITIALIZED! Kiosk ID is ${kioskConfig.value?.kioskId}")
 
         viewModelScope.launch {
-            combine(
+            combine( listOf(
                     lastScanResult,
                     sendingData,
                     sendError,
                     kioskConfig,
-                    scannerMode
-            ) { lastScanResult, sendingData, sendError, kioskConfig, scannerMode ->
+                    scannerMode,
+                    numScans)
+            ) { flows ->
                 BarcodeScreenState(
-                        lastScanResult = lastScanResult,
-                        sendingData = sendingData,
-                        sendError = sendError,
-                        kioskConfig = kioskConfig,
-                        scannerMode = scannerMode
+                        lastScanResult = flows[0] as BarcodeScanResult?,
+                        sendingData = flows[1] as Boolean,
+                        sendError = flows[2] as String,
+                        kioskConfig = flows[3] as KioskConfig?,
+                        scannerMode = flows[4] as ScannerMode,
+                        numScans = flows[5] as Int
                 )
             }.catch { throwable ->
                 throw throwable
@@ -111,6 +115,14 @@ class ScanTrackerViewModel : ViewModel() {
         }
     }
 
+    fun onUpdateServerUrl(serverUrl: Uri) {
+        kioskConfig.value?.serverUrl = serverUrl
+    }
+
+    fun onUpdateKioskId(kioskId: String) {
+        kioskConfig.value?.kioskId = kioskId
+    }
+
     override fun onCleared() {
         super.onCleared()
         Log.i(TAG, "ScanTracker ViewModel destroyed!")
@@ -126,5 +138,6 @@ data class BarcodeScreenState(
     val sendingData: Boolean = false,
     val sendError: String = "",
     val kioskConfig: KioskConfig? = null,
-    val scannerMode: ScannerMode = ScannerMode.SETUP
+    val scannerMode: ScannerMode = ScannerMode.SETUP,
+    val numScans: Int = 0
 )

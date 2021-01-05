@@ -20,27 +20,12 @@ import androidx.navigation.compose.*
 import at.str.lottery.barcode.R
 import at.str.lottery.barcode.model.ScanTrackerViewModel
 import at.str.lottery.barcode.ui.scan.ScanScreen
+import at.str.lottery.barcode.ui.settings.SettingsScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
     object Scan : Screen("scan", R.string.scan, Icons.Filled.Search)
     object Settings : Screen("settings", R.string.settings, Icons.Filled.Settings)
-}
-
-@ExperimentalCoroutinesApi
-@Composable
-fun SettingsScreen(navController: NavController, scanTrackerViewModel: ScanTrackerViewModel) {
-    val viewState by scanTrackerViewModel.state.collectAsState()
-
-
-    Column(modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Lottery Barcode Scanner", style = MaterialTheme.typography.h5)
-        Text(viewState.kioskConfig?.serverUrl.toString())
-        Text(viewState.kioskConfig?.kioskId.toString())
-    }
 }
 
 @ExperimentalCoroutinesApi
