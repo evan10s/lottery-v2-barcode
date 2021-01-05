@@ -27,6 +27,7 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon:
     object Settings : Screen("settings", R.string.settings, Icons.Filled.Settings)
 }
 
+@ExperimentalCoroutinesApi
 @Composable
 fun SettingsScreen(navController: NavController, scanTrackerViewModel: ScanTrackerViewModel) {
     val viewState by scanTrackerViewModel.state.collectAsState()
@@ -44,7 +45,7 @@ fun SettingsScreen(navController: NavController, scanTrackerViewModel: ScanTrack
 
 @ExperimentalCoroutinesApi
 @Composable
-fun LotteryApp() {
+fun LotteryApp(viewModel: ScanTrackerViewModel) {
     LotteryBarcodeScannerTheme {
         // A surface container using the 'background' color from the theme
         val navController = rememberNavController()
@@ -85,7 +86,7 @@ fun LotteryApp() {
                 // would be more appropriate.
                 // See https://stackoverflow.com/q/64955859 and
                 // https://developer.android.com/guide/navigation/navigation-programmatic#share_ui-related_data_between_destinations_with_viewmodel
-                val viewModel: ScanTrackerViewModel = viewModel()
+
                 NavHost(navController, startDestination = Screen.Scan.route) {
                     composable(Screen.Scan.route) {
                         ScanScreen(navController, viewModel)

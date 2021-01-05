@@ -43,7 +43,9 @@ fun CameraPreview(onBarcodeScanned: (List<Barcode>) -> Unit) {
                 .build()
                 .also {
                     it.setAnalyzer(cameraExecutor, QrAnalyzer { barcodes ->
-                        onBarcodeScanned(barcodes)
+                        if (barcodes.isNotEmpty()) {
+                            onBarcodeScanned(barcodes)
+                        }
                     })
                 }
 

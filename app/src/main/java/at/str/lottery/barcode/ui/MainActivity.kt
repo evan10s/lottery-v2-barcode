@@ -13,15 +13,19 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import at.str.lottery.barcode.databinding.CameraHostBinding
 import at.str.lottery.barcode.model.ScanTrackerViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 const val TAG = "LotteryBarcode"
 
 class MainActivity : ComponentActivity() {
     private lateinit var cameraHostBinding: CameraHostBinding
+    private lateinit var viewModel: ScanTrackerViewModel
 
+    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cameraHostBinding = CameraHostBinding.inflate(layoutInflater)
+        viewModel = ViewModelProvider(this).get(ScanTrackerViewModel::class.java)
 
         if (allPermissionsGranted()) {
             startCamera()
@@ -31,7 +35,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            LotteryApp()
+            LotteryApp(viewModel)
         }
     }
 
