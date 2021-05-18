@@ -11,11 +11,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import at.str.lottery.barcode.R
 import at.str.lottery.barcode.model.*
@@ -140,8 +140,9 @@ private fun StatusText(
 @Composable
 fun ErrorIcon() {
     Icon(
-        imageVector = vectorResource(id = R.drawable.ic_baseline_cancel_40_red),
+        painterResource(R.drawable.ic_baseline_cancel_40_red),
         tint = danger,
+        contentDescription = "X"
     )
 }
 
@@ -149,8 +150,9 @@ fun ErrorIcon() {
 fun CheckmarkIcon() {
     Icon(
         // Increase size method - https://stackoverflow.com/a/64378616
-        imageVector = Icons.Filled.CheckCircle.copy(defaultHeight = 40.dp, defaultWidth = 40.dp),
+        imageVector = Icons.Filled.CheckCircle, //.copy(defaultHeight = 40.dp, defaultWidth = 40.dp),
         tint = green,
+        contentDescription = "Checkmark"
     )
 }
 

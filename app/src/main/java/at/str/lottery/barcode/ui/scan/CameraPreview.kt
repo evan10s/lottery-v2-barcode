@@ -7,13 +7,11 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.AmbientContext
-import androidx.compose.ui.platform.AmbientLifecycleOwner
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import androidx.compose.ui.viewinterop.viewModel
 import androidx.core.content.ContextCompat
 import at.str.lottery.barcode.databinding.CameraHostBinding
-import at.str.lottery.barcode.model.ScanTrackerViewModel
 import at.str.lottery.barcode.ui.TAG
 import com.google.mlkit.vision.barcode.Barcode
 import java.util.concurrent.Executors
@@ -21,8 +19,8 @@ import java.util.concurrent.Executors
 
 @Composable
 fun CameraPreview(onBarcodeScanned: (List<Barcode>) -> Unit) {
-    val lifecycleOwner = AmbientLifecycleOwner.current
-    val context = AmbientContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
     // In Jetpack Compose world this is kinda cheating and just bringing in a ConstraintLayout

@@ -3,28 +3,16 @@ package at.str.lottery.barcode.ui.settings
 import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import at.str.lottery.barcode.model.ScanTrackerViewModel
-import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import okhttp3.internal.http2.Header
 
-@ExperimentalLayout
 @ExperimentalCoroutinesApi
 @Composable
 fun SettingsScreen(navController: NavController, scanTrackerViewModel: ScanTrackerViewModel) {
@@ -36,8 +24,8 @@ fun SettingsScreen(navController: NavController, scanTrackerViewModel: ScanTrack
 
         when (viewState.kioskConfig) {
             null -> {
-                HeaderDescription(header = "Server URL", description = "Not set")
-                HeaderDescription(header = "Kiosk ID", description = "Not set")
+                HeaderDescription(header = "Server URL", description = "Not set", onEdit = {})
+                HeaderDescription(header = "Kiosk ID", description = "Not set", onEdit = {})
             }
             else -> {
                 HeaderDescription(
@@ -47,21 +35,20 @@ fun SettingsScreen(navController: NavController, scanTrackerViewModel: ScanTrack
                 )
                 HeaderDescription(
                     header = "Kiosk ID",
-                    description = viewState.kioskConfig?.kioskId ?: "Not set"
+                    description = viewState.kioskConfig?.kioskId ?: "Not set",
+                    onEdit = {}
                 )
             }
         }
     }
 }
 
-@ExperimentalLayout
 @Preview
 @Composable
 fun HeaderDescriptionPreview() {
-    HeaderDescription(header = "Server URL", description = "https://example.com")
+    HeaderDescription(header = "Server URL", description = "https://example.com", onEdit = {})
 }
 
-@ExperimentalLayout
 @Composable
 fun HeaderDescription(header: String, description: String, onEdit: (String) -> Unit) {
     val (editable, setEdit) = remember { mutableStateOf(false) }
@@ -79,38 +66,38 @@ fun HeaderDescription(header: String, description: String, onEdit: (String) -> U
             .fillMaxWidth()
 
     ) {
-        Column {
+        Column() {
             Text(header, style = MaterialTheme.typography.h6)
             if (!editable) {
-                Text(text = desc)
+                //Text(text = desc, modifier = Modifier.preferredHeight(40.dp))
             } else {
-                TextInput(desc, setDesc, {})
+//                textInput(desc, setDesc, {})
             }
         }
         if (!editable) {
-            Icon(Icons.Filled.Edit, modifier = Modifier.align(Alignment.CenterVertically))
+            //Icon(Icons.Filled.Edit, modifier = Modifier.align(Alignment.CenterVertically))
         } else {
-            Icon(Icons.Filled.Close, modifier = Modifier.align(Alignment.CenterVertically))
+            //Icon(Icons.Filled.Close, modifier = Modifier.align(Alignment.CenterVertically))
         }
     }
 }
 
-@Composable
-fun TextInput(text: String,
-                  onTextChange: (String) -> Unit,
-                  onImeAction: () -> Unit,
-                  modifier: Modifier = Modifier
-) = TextField(
-        value = text,
-        onValueChange = onTextChange,
-        backgroundColor = Color.Transparent,
-        maxLines = 1,
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-        onImeActionPerformed = { action, softKeyboardController ->
-            if (action == ImeAction.Done) {
-                onImeAction()
-                softKeyboardController?.hideSoftwareKeyboard()
-            }
-        },
-        modifier = modifier
-    )
+//@Composable
+//fun textInput(text: String,
+//              onTextChange: (String) -> Unit,
+//              onImeAction: () -> Unit,
+//              modifier: Modifier = Modifier
+//) = TextField(
+//        text,
+//        onValueChange = onTextChange,
+//        backgroundColor = Color.Transparent,
+//        maxLines = 1,
+//        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+//        onImeActionPerformed = { action, softKeyboardController ->
+//            if (action == ImeAction.Done) {
+//                onImeAction()
+//                softKeyboardController?.hideSoftwareKeyboard()
+//            }
+//        },
+//        modifier = modifier
+//    )

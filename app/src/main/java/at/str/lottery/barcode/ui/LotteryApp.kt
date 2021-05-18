@@ -7,15 +7,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import at.str.lottery.barcode.R
 import at.str.lottery.barcode.model.ScanTrackerViewModel
@@ -23,9 +17,9 @@ import at.str.lottery.barcode.ui.scan.ScanScreen
 import at.str.lottery.barcode.ui.settings.SettingsScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
-    object Scan : Screen("scan", R.string.scan, Icons.Filled.Search)
-    object Settings : Screen("settings", R.string.settings, Icons.Filled.Settings)
+sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector, val imgContentDescriptor: String) {
+    object Scan : Screen("scan", R.string.scan, Icons.Filled.Search, "Search")
+    object Settings : Screen("settings", R.string.settings, Icons.Filled.Settings, "Settings")
 }
 
 @ExperimentalCoroutinesApi
@@ -46,7 +40,7 @@ fun LotteryApp(viewModel: ScanTrackerViewModel) {
                         val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                         items.forEach { screen ->
                             BottomNavigationItem(
-                                icon = { Icon(screen.icon) },
+                                icon = { Icon(screen.icon, screen.imgContentDescriptor) },
                                 label = { Text(stringResource(screen.resourceId)) },
                                 selected = currentRoute == screen.route,
                                 onClick = {
