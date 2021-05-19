@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 
 /**
- * Gson can't handle Uri's, hence this.'
+ * Gson can't handle Uri's, hence this.
  * From a friendly StackOverflow-er (but Kotlin-ified): https://stackoverflow.com/a/32404511
  */
 public final class UriAdapter : TypeAdapter<Uri>() {

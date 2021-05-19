@@ -25,7 +25,7 @@ const val TAG = "KioskLink";
 class KioskLink : WebSocketListener() {
     private lateinit var webSocket: WebSocket
 
-    public fun run(ip: String, kioskId: Int) {
+    public fun run(ip: String, kioskId: String) {
         val client: OkHttpClient = OkHttpClient.Builder()
             .readTimeout(0, TimeUnit.MILLISECONDS)
             .build()
@@ -34,7 +34,7 @@ class KioskLink : WebSocketListener() {
             .scheme("ws")
             .authority(ip)
             .path("kiosk")
-            .appendPath(kioskId.toString() + "")
+            .appendPath(kioskId)
             .build()
             .toString()
         Log.d(TAG, url)

@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.str.lottery.barcode.ui.TAG
+import at.str.lottery.barcode.util.KioskLink
 import com.google.mlkit.vision.barcode.Barcode
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -21,6 +22,7 @@ class ScanTrackerViewModel : ViewModel() {
     private val kioskConfig: MutableStateFlow<KioskConfig?> = MutableStateFlow(null)
     private val scannerMode = MutableStateFlow(ScannerMode.SETUP)
     private val numScans = MutableStateFlow(0)
+    private val kioskLink: MutableStateFlow<KioskLink?> = MutableStateFlow(null)
 
     val state: StateFlow<BarcodeScreenState>
         get() = _state
@@ -35,7 +37,9 @@ class ScanTrackerViewModel : ViewModel() {
                     sendError,
                     kioskConfig,
                     scannerMode,
-                    numScans)
+                    numScans,
+                    kioskLink,
+                )
             ) { flows ->
                 BarcodeScreenState(
                         lastScanResult = flows[0] as BarcodeScanResult?,
@@ -43,7 +47,8 @@ class ScanTrackerViewModel : ViewModel() {
                         sendError = flows[2] as String,
                         kioskConfig = flows[3] as KioskConfig?,
                         scannerMode = flows[4] as ScannerMode,
-                        numScans = flows[5] as Int
+                        numScans = flows[5] as Int,
+                        kioskLink = flows[6] as KioskLink?,
                 )
             }.catch { throwable ->
                 throw throwable
@@ -79,14 +84,16 @@ class ScanTrackerViewModel : ViewModel() {
                 sendingData.value = true
 
                 viewModelScope.launch {
-                    delay(2000)
-
                     val decodeResult = KioskConfig.decodeKioskConfigBarcode(barcode)
 
                     kioskConfig.value = decodeResult
 
                     if (kioskConfig.value?.isValid() == true) {
                         Log.i(TAG, "Kiosk config is valid")
+
+                        kioskLink.value = KioskLink()
+                        kioskLink.value?.run(kioskConfig.value?.serverUrl.toString(), kioskConfig.value?.kioskId.orEmpty())
+
                         lastScanResult.value = BarcodeScanResult(barcode, true)
                         scannerMode.value = ScannerMode.WAITING_FOR_FIRST_TICKET
                     } else {
@@ -104,13 +111,22 @@ class ScanTrackerViewModel : ViewModel() {
             if (KioskConfig.isKioskConfigBarcode(barcode)) {
                 lastScanResult.value = BarcodeScanResult(barcode, false, "Kiosk config cannot be changed at this time")
                 sendingData.value = false
-                return
-            }
+            } else {
+                numScans.value += 1
 
-            viewModelScope.launch {
-                delay(2000)
-                lastScanResult.value = BarcodeScanResult(barcode, true)
-                sendingData.value = false
+                viewModelScope.launch {
+                    if (kioskLink.value == null) {
+                        lastScanResult.value = BarcodeScanResult(
+                            barcode,
+                            false,
+                            "Unable to send data: not connected to websocket"
+                        )
+                    } else {
+                        kioskLink.value?.sendBarcode(barcode)
+                        lastScanResult.value = BarcodeScanResult(barcode, true)
+                    }
+                    sendingData.value = false
+                }
             }
         }
     }
@@ -121,6 +137,10 @@ class ScanTrackerViewModel : ViewModel() {
 
     fun onUpdateKioskId(kioskId: String) {
         kioskConfig.value?.kioskId = kioskId
+    }
+
+    fun setKioskLink(link: KioskLink?) {
+        kioskLink.value = link
     }
 
     override fun onCleared() {
@@ -139,5 +159,6 @@ data class BarcodeScreenState(
     val sendError: String = "",
     val kioskConfig: KioskConfig? = null,
     val scannerMode: ScannerMode = ScannerMode.SETUP,
-    val numScans: Int = 0
+    val numScans: Int = 0,
+    val kioskLink: KioskLink? = null,
 )

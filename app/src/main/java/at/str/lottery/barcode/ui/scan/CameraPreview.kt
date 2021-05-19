@@ -23,8 +23,6 @@ fun CameraPreview(onBarcodeScanned: (List<Barcode>) -> Unit) {
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
-    // In Jetpack Compose world this is kinda cheating and just bringing in a ConstraintLayout
-    // with the CameraX preview component in it.  But it's the only option right now.
     AndroidViewBinding(CameraHostBinding::inflate) {
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()

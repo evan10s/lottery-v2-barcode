@@ -4,8 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -19,7 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector, val imgContentDescriptor: String) {
     object Scan : Screen("scan", R.string.scan, Icons.Filled.Search, "Search")
-    object Settings : Screen("settings", R.string.settings, Icons.Filled.Settings, "Settings")
+    object Settings : Screen("settings", R.string.setup_info, Icons.Filled.Info, "Info")
 }
 
 @ExperimentalCoroutinesApi
