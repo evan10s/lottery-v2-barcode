@@ -1,10 +1,12 @@
 package at.str.lottery.barcode.ui.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,6 +40,9 @@ fun SettingsScreen(navController: NavController, scanTrackerViewModel: ScanTrack
                     header = "Kiosk ID",
                     description = viewState.kioskConfig?.kioskId ?: "Not set"
                 )
+                Button(onClick = { scanTrackerViewModel.reconnectToWebSocket() }) {
+                    Text("Reconnect to WebSocket")
+                }
             }
         }
     }

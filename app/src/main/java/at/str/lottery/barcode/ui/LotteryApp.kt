@@ -1,16 +1,20 @@
 package at.str.lottery.barcode.ui
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import at.str.lottery.barcode.R
 import at.str.lottery.barcode.model.ScanTrackerViewModel
 import at.str.lottery.barcode.ui.scan.ScanScreen
@@ -37,7 +41,7 @@ fun LotteryApp(viewModel: ScanTrackerViewModel) {
                         )
 
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
-                        val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                        val currentRoute = navBackStackEntry?.destination?.route
                         items.forEach { screen ->
                             BottomNavigationItem(
                                 icon = { Icon(screen.icon, screen.imgContentDescriptor) },
@@ -46,7 +50,7 @@ fun LotteryApp(viewModel: ScanTrackerViewModel) {
                                 onClick = {
                                     // This is the equivalent to popUpTo the start destination
                                     navController.popBackStack(
-                                        navController.graph.startDestination,
+                                        navController.graph.startDestinationId,
                                         false
                                     )
                                     // This if check gives us a "singleTop" behavior where we do not create a
@@ -59,14 +63,18 @@ fun LotteryApp(viewModel: ScanTrackerViewModel) {
                         }
                     }
                 }
-            ) {
+            ) { padding ->
                 // This is a simple app right now so the one global ViewModel is all we need.
                 // However, in the future using Jetpack Navigation's support for scoped state
                 // would be more appropriate.
                 // See https://stackoverflow.com/q/64955859 and
                 // https://developer.android.com/guide/navigation/navigation-programmatic#share_ui-related_data_between_destinations_with_viewmodel
 
-                NavHost(navController, startDestination = Screen.Scan.route) {
+                NavHost(
+                    navController,
+                    startDestination = Screen.Scan.route,
+                    modifier = Modifier.padding(padding)
+                ) {
                     composable(Screen.Scan.route) {
                         ScanScreen(navController, viewModel)
                     }

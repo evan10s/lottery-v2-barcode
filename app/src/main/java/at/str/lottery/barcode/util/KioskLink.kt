@@ -1,24 +1,11 @@
 package at.str.lottery.barcode.util
 
-import android.R.attr
-import okio.ByteString
-import android.util.Log
-
 import android.net.Uri
+import android.util.Log
 import okhttp3.*
-
-import java.util.concurrent.TimeUnit
 import org.json.JSONException
-
 import org.json.JSONObject
-import android.R.attr.text
-
-
-
-
-
-
-
+import java.util.concurrent.TimeUnit
 
 const val TAG = "KioskLink";
 
@@ -48,11 +35,13 @@ class KioskLink : WebSocketListener() {
         client.dispatcher.executorService.shutdown()
     }
 
-    fun sendBarcode(`val`: String?) {
+    fun sendBarcode(barcode: String?) {
+        Log.d(TAG, "Send barcode $barcode")
+
         try {
             Log.d(TAG, "Sending barcode info")
             webSocket.send(
-                JSONObject().put("barcode", `val`)
+                JSONObject().put("barcode", barcode)
                     .put("msgType", "data")
                     .toString()
             )
@@ -64,6 +53,7 @@ class KioskLink : WebSocketListener() {
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         this.webSocket = webSocket
+        Log.d(TAG, "onOpen")
 
         try {
             Log.d(TAG, "Sending barcode info")
@@ -79,10 +69,12 @@ class KioskLink : WebSocketListener() {
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         super.onClosed(webSocket, code, reason)
+        Log.d(TAG, "onClosed")
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         super.onClosing(webSocket, code, reason)
+        Log.d(TAG, "onClosing")
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {

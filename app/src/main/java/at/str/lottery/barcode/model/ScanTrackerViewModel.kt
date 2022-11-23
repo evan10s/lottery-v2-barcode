@@ -1,16 +1,16 @@
 package at.str.lottery.barcode.model
 
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.str.lottery.barcode.ui.TAG
 import at.str.lottery.barcode.util.KioskLink
-import com.google.mlkit.vision.barcode.Barcode
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import com.google.mlkit.vision.barcode.common.Barcode
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class ScanTrackerViewModel : ViewModel() {
@@ -31,7 +31,8 @@ class ScanTrackerViewModel : ViewModel() {
         Log.i(TAG, "VIEW MODEL INITIALIZED! Kiosk ID is ${kioskConfig.value?.kioskId}")
 
         viewModelScope.launch {
-            combine( listOf(
+            combine(
+                listOf(
                     lastScanResult,
                     sendingData,
                     sendError,
@@ -42,13 +43,13 @@ class ScanTrackerViewModel : ViewModel() {
                 )
             ) { flows ->
                 BarcodeScreenState(
-                        lastScanResult = flows[0] as BarcodeScanResult?,
-                        sendingData = flows[1] as Boolean,
-                        sendError = flows[2] as String,
-                        kioskConfig = flows[3] as KioskConfig?,
-                        scannerMode = flows[4] as ScannerMode,
-                        numScans = flows[5] as Int,
-                        kioskLink = flows[6] as KioskLink?,
+                    lastScanResult = flows[0] as BarcodeScanResult?,
+                    sendingData = flows[1] as Boolean,
+                    sendError = flows[2] as String,
+                    kioskConfig = flows[3] as KioskConfig?,
+                    scannerMode = flows[4] as ScannerMode,
+                    numScans = flows[5] as Int,
+                    kioskLink = flows[6] as KioskLink?,
                 )
             }.catch { throwable ->
                 throw throwable
@@ -71,7 +72,8 @@ class ScanTrackerViewModel : ViewModel() {
         }
 
         if ((barcode == lastScanResult.value?.data && lastScanResult.value?.isRecent() == true)
-            || sendingData.value) {
+            || sendingData.value
+        ) {
             return
         }
 
@@ -92,25 +94,60 @@ class ScanTrackerViewModel : ViewModel() {
                         Log.i(TAG, "Kiosk config is valid")
 
                         kioskLink.value = KioskLink()
-                        kioskLink.value?.run(kioskConfig.value?.serverUrl.toString(), kioskConfig.value?.kioskId.orEmpty())
+                        kioskLink.value?.run(
+                            kioskConfig.value?.serverUrl.toString(),
+                            kioskConfig.value?.kioskId.orEmpty()
+                        )
 
                         lastScanResult.value = BarcodeScanResult(barcode, true)
                         scannerMode.value = ScannerMode.WAITING_FOR_FIRST_TICKET
                     } else {
-                        lastScanResult.value = BarcodeScanResult(barcode, false, "Invalid kiosk configuration barcode")
+                        lastScanResult.value =
+                            BarcodeScanResult(barcode, false, "Invalid kiosk configuration barcode")
                     }
 
                     sendingData.value = false
                 }
             } else {
-                lastScanResult.value = BarcodeScanResult(barcode, false, "That doesn't look like a kiosk configuration barcode")
+                lastScanResult.value = BarcodeScanResult(
+                    barcode,
+                    false,
+                    "That doesn't look like a kiosk configuration barcode"
+                )
             }
         } else if (scannerMode.value == ScannerMode.READY) {
             sendingData.value = true
 
             if (KioskConfig.isKioskConfigBarcode(barcode)) {
-                lastScanResult.value = BarcodeScanResult(barcode, false, "Kiosk config cannot be changed at this time")
-                sendingData.value = false
+                val decodeResult = KioskConfig.decodeKioskConfigBarcode(barcode)
+                val same = decodeResult == kioskConfig.value
+
+                when (same) {
+                    true -> {
+                        viewModelScope.launch {
+                            lastScanResult.value =
+                                BarcodeScanResult(barcode, true, "Retrying WebSocket connection...")
+                            kioskLink.value = KioskLink()
+                            kioskLink.value?.run(
+                                kioskConfig.value?.serverUrl.toString(),
+                                kioskConfig.value?.kioskId.orEmpty()
+                            )
+
+                            lastScanResult.value = BarcodeScanResult(barcode, true)
+                            scannerMode.value = ScannerMode.WAITING_FOR_FIRST_TICKET
+                        }
+
+                        sendingData.value = false
+                    }
+                    false -> {
+                        lastScanResult.value = BarcodeScanResult(
+                            barcode,
+                            false,
+                            "Kiosk config cannot be changed at this time"
+                        )
+                        sendingData.value = false
+                    }
+                }
             } else {
                 numScans.value += 1
 
@@ -129,6 +166,13 @@ class ScanTrackerViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun reconnectToWebSocket() {
+        kioskLink.value?.run(
+            kioskConfig.value?.serverUrl.toString(),
+            kioskConfig.value?.kioskId.orEmpty()
+        )
     }
 
     fun onUpdateServerUrl(serverUrl: Uri) {

@@ -3,6 +3,7 @@ package at.str.lottery.barcode.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.app.ActivityCompat
@@ -21,6 +22,7 @@ class MainActivity : ComponentActivity() {
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         cameraHostBinding = CameraHostBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(ScanTrackerViewModel::class.java)
 

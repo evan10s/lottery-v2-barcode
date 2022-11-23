@@ -13,7 +13,7 @@ import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.core.content.ContextCompat
 import at.str.lottery.barcode.databinding.CameraHostBinding
 import at.str.lottery.barcode.ui.TAG
-import com.google.mlkit.vision.barcode.Barcode
+import com.google.mlkit.vision.barcode.common.Barcode
 import java.util.concurrent.Executors
 
 
@@ -38,7 +38,7 @@ fun CameraPreview(onBarcodeScanned: (List<Barcode>) -> Unit) {
             val imageQrAnalyzer = ImageAnalysis.Builder()
                 .build()
                 .also {
-                    it.setAnalyzer(cameraExecutor, QrAnalyzer { barcodes ->
+                    it.setAnalyzer(cameraExecutor, QrAnalyzer { barcodes: List<Barcode> ->
                         if (barcodes.isNotEmpty()) {
                             onBarcodeScanned(barcodes)
                         }

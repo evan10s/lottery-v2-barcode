@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -125,7 +124,7 @@ private fun ScanInstructions(
         Card(
             modifier = Modifier.align(alignment = Alignment.BottomEnd)
                 .alpha(0.8f)
-                .padding(start = 12.dp, bottom = 68.dp, end = 12.dp),
+                .padding(start = 12.dp, bottom = 12.dp, end = 12.dp),
             elevation = 6.dp
         ) {
             val scansPlural = if (viewState.numScans == 1) "" else "s"
